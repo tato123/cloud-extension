@@ -1,0 +1,20 @@
+{
+  "name": "@diff/cloud-frontend",
+  "version": "0.0.1",
+  "description": "Build out a frontend and worry less about your backend",
+  "main": "lib/index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lerna": "^3.15.0"
+  },
+  "dependencies": {
+    "serverless-plugin-existing-s3": "^2.4.0"
+  }
+}

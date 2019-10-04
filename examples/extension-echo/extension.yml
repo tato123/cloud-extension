@@ -1,0 +1,31 @@
+name: Image Resize
+version: 0.0.1
+
+displayName: Resize Images
+
+description: Resizes images uploaded to Cloud Storage to a specified size, and stores both the original and resized images.
+
+resources:
+  - name: handler
+    type: aws.function
+    description:
+      Listens for new images uploaded to your specified Cloud Storage bucket,
+      resizes the images, then stores both images in the same Cloud Storage
+      bucket.
+    properties:
+      sourceDirectory: .
+      eventTrigger:
+        eventType: apigateway
+
+params:
+  - param: IMG_BUCKET
+    type: string
+    label: Cloud Storage bucket for images
+    description: >
+      To which Cloud Storage bucket will you upload images that you want to resize?
+      This bucket will store both the original and resized images.
+    default: ${STORAGE_BUCKET}
+    validationRegex: (.)+\.(.)+\.(.)+
+    validationErrorMessage: Invalid storage bucket
+    example: my-project-12345.appspot.com
+    required: true

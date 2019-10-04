@@ -1,0 +1,18 @@
+{
+  "name": "@diff/server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "babel-node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/node": "^7.6.2",
+    "chokidar": "^3.2.1",
+    "lambda-local-server": "^3.2.1"
+  }
+}
