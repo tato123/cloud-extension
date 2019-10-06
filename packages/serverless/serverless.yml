@@ -18,6 +18,9 @@ provider:
   apiGateway:
     binaryMediaTypes:
       - "*/*"
+  iamManagedPolicies:
+    - arn:aws:iam::aws:policy/AWSLambdaExecute
+    - arn:aws:iam::aws:policy/AWSLambdaFullAccess
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -59,6 +62,9 @@ functions:
     handler: upload.handler
     environment:
       tableName: ${self:custom.tableName}
+      runtime: "nodejs10.x"
+      iamRole:
+        Fn::GetAtt: [IamRoleLambdaExecution, Arn]
     events:
       - s3:
           bucket: extension-staging

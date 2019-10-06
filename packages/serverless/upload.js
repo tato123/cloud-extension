@@ -7,7 +7,11 @@ const yaml = require("js-yaml");
 
 const s3 = new AWS.S3();
 const dynamodb = new AWS.DynamoDB();
+const lambda = new AWS.Lambda();
+
+const lambdaIamRole = process.env.iamRole;
 const extensionTable = process.env.tableName;
+const runtime = process.env.runtime;
 
 const getEventData = event => {
   const srcBucket = event.Records[0].s3.bucket.name;
@@ -76,7 +80,9 @@ const writeExtensionRecord = async entry => {
     TableName: extensionTable
   };
 
-  return await dynamodb.putItem(params).promise();
+  await dynamodb.putItem(params).promise();
+
+  return doc;
 };
 
 const filterByName = (entries, name) => {
@@ -97,6 +103,32 @@ const uploadEntries = entries => {
   );
 };
 
+const writeLambdaFunction = async (bucket, key, doc) => {
+  const fnName = "functor-" + doc.name.replace(" ", "_").toLowerCase();
+  const handler = "index.handler";
+
+  const params = {
+    Code: {
+      S3Bucket: bucket,
+      S3Key: key
+    },
+    Description: "",
+    FunctionName: fnName,
+    Handler: handler, // is of the form of the name of your source file and then name of your function handler
+    MemorySize: 128,
+    Publish: true,
+    Role: lambdaIamRole, // replace with the actual arn of the execution role you created
+    Runtime: runtime,
+    Timeout: 120,
+    VpcConfig: {}
+  };
+
+  console.log("[Lambda upload] Dry Run", params);
+  await lambda.createFunction(params).promise();
+
+  return null;
+};
+
 module.exports.handler = async (event, context, callback) => {
   const { srcBucket, srcKey, name, destBucket } = getEventData(event);
   const params = { Bucket: srcBucket, Key: srcKey };
@@ -111,7 +143,12 @@ module.exports.handler = async (event, context, callback) => {
     const entries = await readZipEntries(data, destBucket, name);
 
     // write extension record
-    await writeExtensionRecord(filterByName(entries, "extension.yml"));
+    const extension = await writeExtensionRecord(
+      filterByName(entries, "extension.yml")
+    );
+
+    // write function
+    await writeLambdaFunction(srcBucket, srcKey, extension);
 
     // write options
     await uploadEntries(entries);

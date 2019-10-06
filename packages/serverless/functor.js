@@ -22,5 +22,20 @@ module.exports.handler = async event => {
   const result = await lambda.invoke(params).promise();
   console.log("Functor result", result);
 
-  return JSON.parse(result.Payload);
+  let callResponse = JSON.parse(result.Payload);
+  console.log("Functor call Response is", callResponse);
+
+  // transform to json string
+  if (typeof callResponse === "object") {
+    callResponse = JSON.stringify(callResponse);
+  }
+
+  const output = {
+    statusCode: 200,
+    body: callResponse
+  };
+
+  console.log("Functor will output", output);
+
+  return output;
 };

@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { echo, pipeline } from "./cloud/echo";
+import { echo, pipeline, listFunctions } from "./cloud/echo";
+
+const useListFunctions = () => {
+  const [functions, setFunctions] = useState();
+
+  useEffect(() => {
+    listFunctions().then(setFunctions);
+  });
+
+  return functions;
+};
 
 function App() {
   const [resp, setResp] = useState();

@@ -1,8 +1,5 @@
-exports.handler = event => {
+exports.handler = async event => {
   return {
-    statusCode: 200,
-    body: {
-      data: params[0] + Math.floor(Math.random() * 10000)
-    }
+    data: "hello-" + Math.floor(Math.random() * 10000)
   };
 };
