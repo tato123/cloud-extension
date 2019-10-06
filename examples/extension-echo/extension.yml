@@ -2,7 +2,6 @@ name: Image Resize
 version: 0.0.1
 
 displayName: Resize Images
-
 description: Resizes images uploaded to Cloud Storage to a specified size, and stores both the original and resized images.
 
 resources:

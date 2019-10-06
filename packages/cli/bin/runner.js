@@ -45,7 +45,7 @@ program
         console.log("Writing with form data", formData);
 
         request.post(
-          "https://ijce6h9e6g.execute-api.us-east-1.amazonaws.com/dev/package/upload",
+          "https://wbtzihedr7.execute-api.us-east-1.amazonaws.com/dev/package/upload",
           {
             formData: formData
           },
