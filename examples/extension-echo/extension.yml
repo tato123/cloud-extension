@@ -1,20 +1,8 @@
-name: Image Resize
+name: echoer
 version: 0.0.1
 
-displayName: Resize Images
-description: Resizes images uploaded to Cloud Storage to a specified size, and stores both the original and resized images.
-
-resources:
-  - name: handler
-    type: aws.function
-    description:
-      Listens for new images uploaded to your specified Cloud Storage bucket,
-      resizes the images, then stores both images in the same Cloud Storage
-      bucket.
-    properties:
-      sourceDirectory: .
-      eventTrigger:
-        eventType: apigateway
+displayName: Echoer
+description: Like a parrot this thing just spits out a response to you
 
 params:
   - param: IMG_BUCKET

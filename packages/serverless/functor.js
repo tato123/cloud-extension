@@ -1,6 +1,7 @@
 "use strict";
 
 const AWS = require("aws-sdk");
+const { toFnName } = require("./utils/fnName");
 
 const lambda = new AWS.Lambda();
 
@@ -14,7 +15,7 @@ module.exports.handler = async event => {
   console.log("Executing", data.run, "with Params", data.params);
 
   const params = {
-    FunctionName: data.run,
+    FunctionName: toFnName(data.run),
     InvocationType: "RequestResponse",
     LogType: "Tail",
     Payload: JSON.stringify(data.params)

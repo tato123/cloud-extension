@@ -1,0 +1,5 @@
+name: listFns
+version: 0.0.1
+
+displayName: List All Available Functions
+description: Gets all the functions available

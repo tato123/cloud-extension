@@ -60,6 +60,8 @@ provider:
 functions:
   pkgReader:
     handler: upload.handler
+    timeout: 900
+    reservedConcurrency: 20
     environment:
       tableName: ${self:custom.tableName}
       runtime: "nodejs10.x"
@@ -72,12 +74,6 @@ functions:
           rules:
             - suffix: .zip
           existing: true
-  pkgUpload:
-    handler: packager.handle
-    events:
-      - http:
-          method: post
-          path: package/upload
   functor:
     handler: functor.handler
     events:

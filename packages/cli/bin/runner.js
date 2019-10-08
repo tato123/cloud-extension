@@ -3,10 +3,9 @@ import chalk from "chalk";
 import pkg from "../package.json";
 import fs from "fs";
 import path from "path";
-import yaml from "js-yaml";
-const AdmZip = require("adm-zip");
+import { upload, validateExtension, createZip } from "../lib/deploy";
+import AWS from "aws-sdk";
 
-const request = require("request");
 const uuidv4 = require("uuid/v4");
 
 program
@@ -16,54 +15,15 @@ program
     const workingDir = path.resolve(process.cwd(), dir);
     const extensionYaml = path.resolve(workingDir, "./extension.yml");
     const filename = uuidv4() + ".zip";
-    const tmpZip = path.resolve(workingDir, filename);
 
-    try {
-      // read the extension yml
-      var doc = yaml.safeLoad(fs.readFileSync(extensionYaml, "utf8"));
-
-      // perform validation
-      console.log("Valid Extension");
-
-      // package it up
-      const zip = new AdmZip();
-      const items = fs.readdirSync(workingDir);
-
-      for (let i in items) {
-        console.log("Reading item", items[i]);
-        zip.addLocalFile(items[i]);
-      }
-
-      try {
-        const formData = {
-          key: filename,
-          file: zip.toBuffer(),
-          acl: "public-read-write",
-          "x-amz-acl": "public-read-write"
-        };
-
-        console.log("Writing with form data", formData);
-
-        request.post(
-          "https://wbtzihedr7.execute-api.us-east-1.amazonaws.com/dev/package/upload",
-          {
-            formData: formData
-          },
-          (err, httpResponse, body) => {
-            if (err) {
-              return console.error(err);
-            }
-            console.log("Sent");
-          }
-        );
-      } catch (err) {
-        console.error(err);
-      }
-
-      // write an entry with a checksum
-    } catch (e) {
-      console.log(e);
-    }
+    createZip(workingDir)
+      .then(zip => upload(filename, zip))
+      .then(result => {
+        console.log("Successfully uploaded with result", result);
+      })
+      .catch(e => {
+        console.error("Unable to upload", e);
+      });
   });
 
 program
