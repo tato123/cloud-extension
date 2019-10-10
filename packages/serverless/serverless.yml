@@ -6,9 +6,12 @@ service: serverless
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
+plugins:
+  - serverless-api-compression
 
 custom:
   tableName: "ExtensionTable"
+  contentCompression: 0
 
 provider:
   name: aws
@@ -80,6 +83,17 @@ functions:
       - http:
           method: post
           path: functor
+          cors:
+            origin: "*" # <-- Specify allowed origin
+            headers: # <-- Specify allowed headers
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+            maxAge: 600
 
 resources:
   Resources:

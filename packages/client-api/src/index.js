@@ -1,21 +1,25 @@
 export const getConfig = () => {};
 
 export const cloudPipeline = (...fns) => {
+  console.log("Executing pipeline", fns.length);
   const invokablePipeline = async (...fnParams) => {
     let lastParam = fnParams;
     for (let fn of fns) {
       if (fn.type === "cloudFunction") {
         const retVal = await fn(...lastParam);
-
-        // coerce return value back to an array to simulate
-        // rest params
+        lastParam = [retVal];
+      } else if (fn.type === "cloudPipeline") {
+        const retval = await fn(...lastParam);
+        lastParam = [retval];
+      } else if (typeof fn === "function") {
+        const retVal = await fn(...lastParam);
         lastParam = [retVal];
       } else {
         console.error("not sure what to do, skipping");
       }
     }
 
-    return lastParam;
+    return lastParam[0];
   };
 
   invokablePipeline.type = "cloudPipeline";
@@ -26,14 +30,14 @@ export const cloudPipeline = (...fns) => {
 const _getFunctionRef = async fnName => {
   return async fnParams => {
     const resp = await fetch(
-      "https://u4269utsdf.execute-api.us-east-1.amazonaws.com/dev/functor",
+      "https://401zrzt07e.execute-api.us-east-1.amazonaws.com/dev/functor",
       {
         headers: {
           "Content-Type": "application/json"
         },
         method: "POST",
         body: JSON.stringify({
-          run: checksum,
+          run: fnName,
           params: fnParams
         })
       }

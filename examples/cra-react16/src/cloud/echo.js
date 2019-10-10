@@ -1,18 +1,24 @@
-import Cloud from "@diff/client-api";
+import Cloud, { cloudFunction, cloudPipeline } from "@diff/client-api";
 
-const piper = Cloud.initialize({
+Cloud.initialize({
   apiKey: "123"
 });
 
 export const echo = () => {
-  return piper.cloudFunction("echo-smart")("hello world");
+  return cloudFunction("echoer")("hello world");
 };
 
 export const pipeline = async () => {
-  return piper.cloudPipeline(
-    piper.cloudFunction("echo-smart"),
-    piper.cloudFunction("fancy-log")
+  return cloudPipeline(
+    cloudFunction("echoer"),
+    x => {
+      console.log("got a response inside echoer", x);
+    },
+    cloudFunction("fancy-log"),
+    cloudPipeline(cloudFunction("listFns")),
+    x => {
+      console.log("Got a response, inside inner function", x);
+      return x;
+    }
   )("hello-world");
 };
-
-export const listFunctions = () => piper.cloudFunction("list-fns");
