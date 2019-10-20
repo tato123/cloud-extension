@@ -6,7 +6,7 @@ export const getConfig = () => {};
 const toPipelineDefinition = fns => {
   // from left to right build a pipeline
   const pipeline = {
-    pipeline: fns.map(fn => {
+    pipeline: fns.map((fn, index) => {
       //
       if (fn.type === "cloudFunction") {
         // generate a state id
@@ -34,33 +34,12 @@ const toPipelineDefinition = fns => {
 export const cloudPipeline = (...fns) => {
   const pipelineDefinition = toPipelineDefinition(fns);
 
-  // console.log("Executing pipeline", fns.length);
-  // const invokablePipeline = async (...fnParams) => {
-  //   let lastParam = fnParams;
-  //   for (let fn of fns) {
-  //     if (fn.type === "cloudFunction") {
-  //       const retVal = await fn(...lastParam);
-  //       lastParam = [retVal];
-  //     } else if (fn.type === "cloudPipeline") {
-  //       const retval = await fn(...lastParam);
-  //       lastParam = [retval];
-  //     } else if (typeof fn === "function") {
-  //       const retVal = await fn(...lastParam);
-  //       lastParam = [retVal];
-  //     } else {
-  //       console.error("not sure what to do, skipping");
-  //     }
-  //   }
-
-  //   return lastParam[0];
-  // };
-
-  // invokablePipeline.type = "cloudPipeline";
-
-  // return invokablePipeline;
-
-  const invokablePipeline = async fnParams => {
-    console.log("trying to call me", fnParams);
+  const invokablePipeline = async (...fnParams) => {
+    pipelineDefinition["params"] = fnParams;
+    console.log(
+      "Calling pipeline api with the following definition",
+      pipelineDefinition
+    );
   };
   invokablePipeline.definition = pipelineDefinition;
   invokablePipeline.type = "cloudPipeline";
